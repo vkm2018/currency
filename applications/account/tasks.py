@@ -12,7 +12,7 @@ def celery_confirm_email(code, email):
 
     full_link = f'http://localhost:8000/api/v1/account/active/{code}'
     send_mail(
-        'Он-лайн кинотеатр cinemakg',
+        'Currency exchange',
         full_link,
         'victorkim.2016@gmail.com',
         [email]

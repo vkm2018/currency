@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
-from applications.account.tasks import  celery_confirm_email
+from applications.account.tasks import celery_confirm_email, forgot_password_email
 from applications.account.send_mail import send_confirmation_email
 
 User = get_user_model()
@@ -63,11 +63,17 @@ class LoginSeriazlier(serializers.ModelSerializer):
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
+    def validate_email(self, email):
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError('Пользователь не зарегистрирован')
+        return email
+
     def send_code(self):
         email = self.validated_data.get('email')
         user = User.objects.get(email)
         user.create_activation_code()
         user.save()
+        forgot_password_email (user.activation_code, email)
 
 
 class ForgotPasswordCompleteSerializer(serializers.Serializer):

@@ -16,3 +16,11 @@ class Organisations(models.Model):
 
     def __str__(self):
         return self.title
+
+class Currency(models.Model):
+    CURRENCY = (('Dollar USA', 'USD'), (''))
+    organisation = models.ForeignKey(Organisations, on_delete=models.CASCADE, related_name='currencies')
+
+    buy = models.IntegerField(default=0)
+    sell = models.IntegerField(default=0)
+

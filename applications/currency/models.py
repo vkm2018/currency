@@ -18,9 +18,31 @@ class Organisations(models.Model):
         return self.title
 
 class Currency(models.Model):
-    CURRENCY = (('Dollar USA', 'USD'), (''))
+    CURRENCY = (('Dollar USA', 'USD'), ('Рубль', 'RUB'), ('EURO', 'EURO'), ('Тенге', 'Tenge'))
     organisation = models.ForeignKey(Organisations, on_delete=models.CASCADE, related_name='currencies')
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True, )
+    valuta = models.CharField(choices=CURRENCY)
+    buy = models.DecimalField(default=0, max_digits=6, decimal_places=2)
+    sell = models.DecimalField(default=0, max_digits=6, decimal_places=2)
 
-    buy = models.IntegerField(default=0)
-    sell = models.IntegerField(default=0)
+    def __str__(self):
+        return f'{self.valuta}, {self.created_at},{self.organisation}'
+
+
+class Rating(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE,related_name='ragtins', verbose_name='Владелец рейтинга')
+    org = models.ForeignKey(Organisations, on_delete=models.CASCADE, related_name='ratings', verbose_name='Организация')
+    rating = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.org}, {self.rating}'
+
+class Comment(models.Model):
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments', verbose_name='Владелец коммента')
+    org = models.ForeignKey(Organisations,on_delete=models.CASCADE, related_name='comments', verbose_name='Организация')
+    comment = models.TextField()
+
+    def __str__(self):
+        return f'{self.owner},{self.org}.{self.comment}'
 
